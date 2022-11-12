@@ -1,26 +1,22 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import { useQueryCities, useQueryDistance } from "./services";
 
-function App() {
+const App = () => {
+  const [cities, setCities] = useState("");
+
+  const queryCities = useQueryCities(cities);
+  const queryDistance = useQueryDistance(["Paris", "Marseille", "Lyon"]);
+
+  console.log({ queryCities, queryDistance });
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <input
+        placeholder="CITY NAME"
+        onChange={(e) => setCities(e.target.value)}
+      />
     </div>
   );
-}
+};
 
 export default App;
