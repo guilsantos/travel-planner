@@ -1,20 +1,56 @@
 import { useState } from "react";
 import dayjs, { Dayjs } from "dayjs";
-import ComboBox from "./components/ComboBox";
+import { useSearchParams } from "react-router-dom";
+import ComboBox from "../components/ComboBox";
 import { Button, Stack, TextField, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2/Grid2";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 
 const App = () => {
-  const [origin, setOrigin] = useState();
-  // const [intermediate, setIntermediate] = useState();
-  const [destination, setDestination] = useState();
-  const [passengers, setPassengers] = useState<string>();
+  const [search, setSearch] = useSearchParams();
+  const searchAsObject = Object.fromEntries(new URLSearchParams(search));
 
-  const [date, setDate] = useState<Dayjs | null>(null);
+  const [origin, setOrigin] = useState<string>(searchAsObject.origin);
+  const [destination, setDestination] = useState<string>(
+    searchAsObject.destination
+  );
+  const [passengers, setPassengers] = useState<string>(
+    searchAsObject.passengers
+  );
+  const [date, setDate] = useState<Dayjs | null>(
+    searchAsObject.date ? dayjs(searchAsObject?.date) : null
+  );
 
-  const handleChange = (newValue: Dayjs | null) => {
+  const handleOrigin = (origin: string) => {
+    setOrigin(origin);
+    setSearch({
+      ...searchAsObject,
+      origin,
+    });
+  };
+
+  const handleDestination = (destination: string) => {
+    setDestination(destination);
+    setSearch({
+      ...searchAsObject,
+      destination,
+    });
+  };
+
+  const handlePassangers = (e: any) => {
+    setPassengers(e.target.value);
+    setSearch({
+      ...searchAsObject,
+      passengers: e.target.value,
+    });
+  };
+
+  const handleDate = (newValue: Dayjs | null) => {
     setDate(newValue);
+    setSearch({
+      ...searchAsObject,
+      date: newValue?.toISOString() ?? "",
+    });
   };
 
   return (
@@ -26,14 +62,14 @@ const App = () => {
         <Grid xs={6}>
           <ComboBox
             title="City of origin"
-            onChange={(e: any) => setOrigin(e.target.value)}
+            onChange={handleOrigin}
             value={origin}
           />
         </Grid>
         <Grid xs={6}>
           <ComboBox
             title="City of destination"
-            onChange={(e: any) => setDestination(e.target.value)}
+            onChange={handleDestination}
             value={destination}
           />
         </Grid>
@@ -42,7 +78,7 @@ const App = () => {
             label="Trip date"
             inputFormat="MM/DD/YYYY"
             value={date}
-            onChange={handleChange}
+            onChange={handleDate}
             renderInput={(params) => <TextField {...params} />}
             shouldDisableDate={(day) => day.isBefore(dayjs())}
           />
@@ -51,7 +87,7 @@ const App = () => {
           <TextField
             fullWidth
             placeholder="Number of passengers"
-            onChange={(e) => setPassengers(e.target.value)}
+            onChange={handlePassangers}
             value={passengers}
           />
         </Grid>
@@ -61,13 +97,6 @@ const App = () => {
           </Stack>
         </Grid>
       </Grid>
-
-      {/* <ComboBox
-        title="Intermediate city"
-        onChange={(e: any) => setIntermediate(e.target.value)}
-        value={intermediate}
-      /> */}
-      {/* <Typography variant="subtitle1">Add intermediate city</Typography> */}
     </div>
   );
 };

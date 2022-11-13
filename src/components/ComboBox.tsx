@@ -1,25 +1,23 @@
-import { useState } from "react";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import { useQueryCities } from "../services";
 
 const ComboBox = ({ title, value, onChange }: any) => {
-  const [selectedItem, setSelectedItem] = useState<string | null | undefined>();
-  const [city, setCities] = useState("");
-  const { data } = useQueryCities(city);
+  const { data } = useQueryCities(value);
 
   const citiesList = data?.map((c) => c[0]);
 
+  const handleChange = (newValue: any) => {
+    onChange(newValue);
+  };
+
   return (
     <Autocomplete
-      onChange={(event: any, newValue: string | null) => {
-        setSelectedItem(newValue);
-      }}
-      value={selectedItem}
-      onInputChange={(e, newValue) => setCities(newValue as string)}
-      inputValue={city}
+      value={value}
+      onInputChange={(e, newValue) => handleChange(newValue)}
+      inputValue={value}
       disablePortal
-      options={citiesList || []}
+      options={citiesList || [value]}
       sx={{ width: 300 }}
       renderInput={(params) => (
         <TextField {...params} fullWidth label={title} />

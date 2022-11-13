@@ -3,13 +3,28 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import ReactDOM from "react-dom/client";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import App from "./App";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import Search from "./pages/Search";
+import Result from "./pages/Result";
+import ErrorPage from "./pages/ErrorPage";
 import reportWebVitals from "./reportWebVitals";
 
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Search />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "result",
+    element: <Result />,
+  },
+]);
 
 const queryClient = new QueryClient();
 
@@ -20,7 +35,7 @@ root.render(
   <React.StrictMode>
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <QueryClientProvider client={queryClient}>
-        <App />
+        <RouterProvider router={router} />
       </QueryClientProvider>
     </LocalizationProvider>
   </React.StrictMode>
