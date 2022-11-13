@@ -1,45 +1,29 @@
-import { useState } from "react";
-import dayjs, { Dayjs } from "dayjs";
-import ComboBox from "../components/ComboBox";
-import { Button, Stack, TextField, Typography } from "@mui/material";
-import Grid from "@mui/material/Unstable_Grid2/Grid2";
-import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import { useSearchParams } from "react-router-dom";
+import { useQueryDistance } from "../services";
+
+const formatDistance = (distance?: number) => {
+  return `${(distance || 0).toFixed(2)} Km`;
+};
 
 const App = () => {
-  const [origin, setOrigin] = useState();
-  const [destination, setDestination] = useState();
-  const [passengers, setPassengers] = useState<string>();
+  const [search] = useSearchParams();
 
-  const [date, setDate] = useState<Dayjs | null>(null);
+  const searchAsObject = Object.fromEntries(new URLSearchParams(search));
 
-  const handleChange = (newValue: Dayjs | null) => {
-    setDate(newValue);
-  };
-
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  const searchAsObject = Object.fromEntries(new URLSearchParams(searchParams));
-
-  console.log("searchAsObject", searchAsObject);
-
-  console.log(searchParams.get("a"));
-  console.log(searchParams.get("peperoni"));
-  console.log(searchParams.get("city"));
-  console.log("searchParams", searchParams);
-
-  const handleSave = () => {
-    setSearchParams({
-      a: "asdasdas",
-      peperoni: "ppppppppp",
-      city: "cityA,cityB,cityC",
-    });
-  };
+  const { data } = useQueryDistance([
+    searchAsObject.origin,
+    searchAsObject.destination,
+  ]);
 
   return (
     <div>
-      iuaghdkjashkjdhasjkdhsakjdh
-      <button onClick={handleSave}>save button!</button>
+      <div>Trip date {searchAsObject.date}</div>
+      <div>Number of passengers {searchAsObject.passengers}</div>
+
+      <div>
+        The distance between {searchAsObject.origin} and
+        {searchAsObject.destination} is {formatDistance(data?.[0])}
+      </div>
     </div>
   );
 };

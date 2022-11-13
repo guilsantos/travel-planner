@@ -1,12 +1,18 @@
 import { useState } from "react";
 import dayjs, { Dayjs } from "dayjs";
-import { useSearchParams } from "react-router-dom";
+import {
+  useSearchParams,
+  useNavigate,
+  createSearchParams,
+} from "react-router-dom";
 import ComboBox from "../components/ComboBox";
 import { Button, Stack, TextField, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2/Grid2";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 
 const App = () => {
+  const navigate = useNavigate();
+
   const [search, setSearch] = useSearchParams();
   const searchAsObject = Object.fromEntries(new URLSearchParams(search));
 
@@ -53,6 +59,13 @@ const App = () => {
     });
   };
 
+  const handleRouteChange = () => {
+    navigate({
+      pathname: "/result",
+      search: `?${createSearchParams(searchAsObject)}`,
+    });
+  };
+
   return (
     <div>
       <Grid container spacing={2}>
@@ -93,7 +106,9 @@ const App = () => {
         </Grid>
         <Grid xs={12}>
           <Stack spacing={2} direction="row">
-            <Button variant="contained">Calc the route!</Button>
+            <Button variant="contained" onClick={handleRouteChange}>
+              Calc the route!
+            </Button>
           </Stack>
         </Grid>
       </Grid>
