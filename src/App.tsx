@@ -11,7 +11,7 @@ const App = () => {
   const [destination, setDestination] = useState();
   const [passengers, setPassengers] = useState<string>();
 
-  const [date, setDate] = useState<Dayjs | null>();
+  const [date, setDate] = useState<Dayjs | null>(null);
 
   const handleChange = (newValue: Dayjs | null) => {
     setDate(newValue);
@@ -44,7 +44,7 @@ const App = () => {
             value={date}
             onChange={handleChange}
             renderInput={(params) => <TextField {...params} />}
-            disablePast
+            shouldDisableDate={(day) => day.isBefore(dayjs())}
           />
         </Grid>
         <Grid xs={12}>
