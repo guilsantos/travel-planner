@@ -29,7 +29,9 @@ const calcDistance = (startCity: City, endCity: City) => {
   return distance;
 };
 
-export const getDistanceAPI = (cities: string[]) => {
+export const getDistanceAPI = async (cities: string[]) => {
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+
   if (cities.includes("Dijon")) throw new Error("API error");
 
   const distances: number[] = [];

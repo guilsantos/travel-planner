@@ -3,7 +3,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 import { useQueryCities } from "../services";
 
 const ComboBox = ({ title, value, onChange }: any) => {
-  const { data } = useQueryCities(value);
+  const { data, isLoading } = useQueryCities(value);
 
   const citiesList = data?.map((c) => c[0]);
 
@@ -13,11 +13,12 @@ const ComboBox = ({ title, value, onChange }: any) => {
 
   return (
     <Autocomplete
+      loading={isLoading}
       value={value}
       onInputChange={(e, newValue) => handleChange(newValue)}
       inputValue={value}
       disablePortal
-      options={citiesList || [value]}
+      options={citiesList || []}
       renderInput={(params) => (
         <TextField {...params} fullWidth label={title} />
       )}
