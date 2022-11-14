@@ -18,7 +18,6 @@ const ComboBox = ({ title, value, onChange }: any) => {
       inputValue={value}
       disablePortal
       options={citiesList || [value]}
-      sx={{ width: 300 }}
       renderInput={(params) => (
         <TextField {...params} fullWidth label={title} />
       )}

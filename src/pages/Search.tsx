@@ -1,5 +1,5 @@
 import { useState } from "react";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 import {
   useSearchParams,
   useNavigate,
@@ -16,46 +16,21 @@ const App = () => {
   const [search, setSearch] = useSearchParams();
   const searchAsObject = Object.fromEntries(new URLSearchParams(search));
 
-  const [origin, setOrigin] = useState<string>(searchAsObject.origin);
-  const [destination, setDestination] = useState<string>(
-    searchAsObject.destination
-  );
-  const [passengers, setPassengers] = useState<string>(
-    searchAsObject.passengers
-  );
-  const [date, setDate] = useState<Dayjs | null>(
-    searchAsObject.date ? dayjs(searchAsObject?.date) : null
-  );
+  const [state, setState] = useState({
+    origin: searchAsObject.origin,
+    destination: searchAsObject.destination,
+    passengers: searchAsObject.passengers,
+    date: searchAsObject.date ? dayjs(searchAsObject?.date) : null,
+  });
 
-  const handleOrigin = (origin: string) => {
-    setOrigin(origin);
+  const handleChange = (field: string) => (value: string) => {
+    setState((currentState) => ({
+      ...currentState,
+      [field]: value,
+    }));
     setSearch({
       ...searchAsObject,
-      origin,
-    });
-  };
-
-  const handleDestination = (destination: string) => {
-    setDestination(destination);
-    setSearch({
-      ...searchAsObject,
-      destination,
-    });
-  };
-
-  const handlePassangers = (e: any) => {
-    setPassengers(e.target.value);
-    setSearch({
-      ...searchAsObject,
-      passengers: e.target.value,
-    });
-  };
-
-  const handleDate = (newValue: Dayjs | null) => {
-    setDate(newValue);
-    setSearch({
-      ...searchAsObject,
-      date: newValue?.toISOString() ?? "",
+      [field]: value,
     });
   };
 
@@ -66,47 +41,70 @@ const App = () => {
     });
   };
 
+  const handleAddIntermediate = () => {};
+
   return (
     <div>
       <Grid container spacing={2}>
         <Grid xs={12}>
-          <Typography variant="subtitle1">Search form</Typography>
+          <Typography variant="h6">Search form</Typography>
         </Grid>
         <Grid xs={6}>
           <ComboBox
             title="City of origin"
-            onChange={handleOrigin}
-            value={origin}
+            onChange={handleChange("origin")}
+            value={state.origin}
           />
         </Grid>
         <Grid xs={6}>
           <ComboBox
             title="City of destination"
-            onChange={handleDestination}
-            value={destination}
+            onChange={handleChange("destination")}
+            value={state.destination}
           />
         </Grid>
         <Grid xs={12}>
+          <Button
+            variant="contained"
+            onClick={handleAddIntermediate}
+            disabled={!state.origin}
+          >
+            Add Intermediate City
+          </Button>
+        </Grid>
+        <Grid xs={6}>
           <DesktopDatePicker
             label="Trip date"
             inputFormat="MM/DD/YYYY"
-            value={date}
-            onChange={handleDate}
-            renderInput={(params) => <TextField {...params} />}
+            value={state.date}
+            onChange={(newValue) =>
+              handleChange("date")(newValue?.toISOString() ?? "")
+            }
+            renderInput={(params) => <TextField fullWidth {...params} />}
             shouldDisableDate={(day) => day.isBefore(dayjs())}
           />
         </Grid>
-        <Grid xs={12}>
+        <Grid xs={6}>
           <TextField
             fullWidth
             placeholder="Number of passengers"
-            onChange={handlePassangers}
-            value={passengers}
+            onChange={(e) => handleChange("passengers")(e.target.value)}
+            value={state.passengers}
+            type="number"
           />
         </Grid>
         <Grid xs={12}>
           <Stack spacing={2} direction="row">
-            <Button variant="contained" onClick={handleRouteChange}>
+            <Button
+              variant="contained"
+              onClick={handleRouteChange}
+              disabled={
+                !state.origin ||
+                !state.destination ||
+                !state.date ||
+                !state.passengers
+              }
+            >
               Calc the route!
             </Button>
           </Stack>
