@@ -10,7 +10,13 @@ const getDistance = async (cities: string[]) => {
 
 export const useQueryDistance = (
   cities: string[]
-): UseQueryResult<number[]> => {
+): UseQueryResult<
+  {
+    origin: string;
+    destination: string;
+    distance: number;
+  }[]
+> => {
   return useQuery([QUERY_KEY.DISTANCES, cities], () => getDistance(cities), {
     staleTime: Infinity,
   });

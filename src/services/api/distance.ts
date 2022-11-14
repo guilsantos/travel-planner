@@ -34,15 +34,23 @@ export const getDistanceAPI = async (cities: string[]) => {
 
   if (cities.includes("Dijon")) throw new Error("API error");
 
-  const distances: number[] = [];
+  const distances: {
+    origin: string;
+    destination: string;
+    distance: number;
+  }[] = [];
 
   const fullCities: City[] = cities.map(
-    (c) => CITIES.filter((city) => city?.[0]?.includes(c))?.[0] ?? ["", 0, 0]
+    (c) => CITIES.filter((city) => city?.[0]?.includes(c))?.[0]
   );
 
   for (let i = 0; i < fullCities.length - 1; i++) {
     const distance = calcDistance(fullCities[i], fullCities[i + 1]);
-    distances.push(distance);
+    distances.push({
+      origin: fullCities[i][0],
+      destination: fullCities[i + 1][0],
+      distance,
+    });
   }
 
   return distances;

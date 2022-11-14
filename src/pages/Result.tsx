@@ -1,7 +1,9 @@
+import dayjs from "dayjs";
 import { useSearchParams } from "react-router-dom";
 import { Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2/Grid2";
 import TravelCard from "../components/TravelCard";
+import TravelCardLoading from "../components/TravelCard.loading";
 import { useQueryDistance } from "../services";
 
 const formatDistance = (distance?: number) => {
@@ -13,33 +15,22 @@ const App = () => {
 
   const searchAsObject = Object.fromEntries(new URLSearchParams(search));
 
-  const x = [
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
+  const INTERMEDIATE_CITIES = searchAsObject?.intermediates?.split(",") ?? [];
+
+  const ROUTE = [
+    searchAsObject.origin,
+    ...INTERMEDIATE_CITIES,
+    searchAsObject.destination,
   ];
 
-  const { data, isLoading } = useQueryDistance([
-    searchAsObject.origin,
-    searchAsObject.destination,
-  ]);
+  const { data, isLoading } = useQueryDistance(ROUTE);
+
+  const TOTAL_DISTANCE = (data || []).reduce(
+    (prev, curr) => prev + curr.distance,
+    0
+  );
+
+  const FORMATED_DATA = dayjs(searchAsObject.date).format("MM/DD/YYYY");
 
   return (
     <Grid container spacing={3}>
@@ -47,21 +38,32 @@ const App = () => {
         <Typography variant="h6">Results</Typography>
       </Grid>
       <Grid xs={12}>
-        <Typography variant="body1">Trip date {searchAsObject.date}</Typography>
+        <Typography variant="body1">Trip date {FORMATED_DATA}</Typography>
       </Grid>
       <Grid xs={12}>
         <Typography variant="body1">
           Number of passengers {searchAsObject.passengers}
         </Typography>
       </Grid>
+      <Grid xs={12}>
+        <Typography variant="body1">
+          Total distance {formatDistance(TOTAL_DISTANCE)}
+        </Typography>
+      </Grid>
 
-      {x.map((y, i) => (
+      {isLoading &&
+        ROUTE.map((route, i) => (
+          <Grid xs={12} sm={6} md={4} lg={3} key={i}>
+            <TravelCardLoading />
+          </Grid>
+        ))}
+
+      {(data || []).map((route, i) => (
         <Grid xs={12} sm={6} md={4} lg={3} key={i}>
           <TravelCard
-            origin={searchAsObject.origin}
-            destination={searchAsObject.destination}
-            distance={formatDistance(data?.[0])}
-            isLoading={isLoading}
+            origin={route.origin}
+            destination={route.destination}
+            distance={formatDistance(route.distance)}
           />
         </Grid>
       ))}
